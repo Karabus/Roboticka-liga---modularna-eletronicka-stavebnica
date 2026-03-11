@@ -9,8 +9,8 @@ int joyY = A1;
 float servoXPos = 90;
 float servoYPos = 90;
 
-int center = 512;
-int deadzone = 40;
+int center = 740;
+int deadzone = 200;
 
 void setup() {
   Serial.begin(115200);
@@ -27,15 +27,19 @@ void loop() {
   int x = analogRead(joyX);
   int y = analogRead(joyY);
 
-  int dx = x - center;
-  int dy = y - center;
 
-  if (abs(dx) > deadzone) {
-    servoXPos += dx / 200.0;   // citlivosť
+  if (x > center + deadzone) {
+    servoXPos += 1;   
+  }
+  else if (x < center - deadzone){
+    servoXPos-=1;
   }
 
-  if (abs(dy) > deadzone) {
-    servoYPos += dy / 200.0;
+  if (y > center + deadzone) {
+    servoYPos += 1;
+  }
+  else if (y < center - deadzone){
+    servoYPos-=1;
   }
 
   servoXPos = constrain(servoXPos, 0, 180);

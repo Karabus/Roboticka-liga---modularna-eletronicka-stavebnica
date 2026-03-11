@@ -1,36 +1,32 @@
 #include <Servo.h>
 
-Servo servo;
-
 int joyX = A0;
+int joyY = A1;
+int button = 15;
 
-int center = 512;
-int deadzone = 40;
-
-int servoValue = 90;
+Servo servo;
 
 void setup() {
   Serial.begin(115200);
-  servo.attach(0); // GP0
+
+  pinMode(button, INPUT_PULLUP);
+
+  servo.attach(9);   // pin serva
 }
 
 void loop() {
 
   int x = analogRead(joyX);
-  int dx = x - center;
 
-  if (abs(dx) > deadzone) {
-    servoValue = 90 + dx / 10;   // citlivosť
-  } else {
-    servoValue = 90;             // stop
-  }
+  // mapovanie joysticku na servo
+  int speed = map(x, 0, 4095, 0, 180)+57;
 
-  servoValue = constrain(servoValue, 0, 180);
+  servo.write(speed);
 
-  servo.write(servoValue);
-
-  Serial.print("Servo value: ");
-  Serial.println(servoValue);
+  Serial.print("X: ");
+  Serial.print(x);
+  Serial.print("  Servo: ");
+  Serial.println(speed);
 
   delay(20);
 }
