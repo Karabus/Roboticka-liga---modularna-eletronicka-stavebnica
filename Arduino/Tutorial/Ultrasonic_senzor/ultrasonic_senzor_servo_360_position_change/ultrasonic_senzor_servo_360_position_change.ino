@@ -5,7 +5,7 @@
 #define SERVO_PIN 0
 
 Servo servo;
-
+int speed = 90;
 void setup() {
   Serial.begin(115200);
   servo.attach(SERVO_PIN);
@@ -25,12 +25,20 @@ void loop() {
   float distance = duration * 0.0343 / 2; // cm
 
   // Obmedzíme rozsah
-  distance = constrain(distance, 5, 100);
+  distance = constrain(distance, 2, 100);
 
   // Prevedieme vzdialenosť na rýchlosť serva
   // bližšie = otáča sa rýchlejšie doprava
-  int speed = map(distance, 5, 100, 180, 90); // 90 = stop, 180 = max doprava
-
+  if (distance < 15){
+    speed = map(distance, 2, 15, 0, 89);
+  }
+  else if (distance >= 15 && distance < 30){
+    speed = 90;
+  }
+  else if(distance >= 30){
+    speed = map(distance, 30, 100, 91, 180); // 90 = stop, 180 = max doprava
+  }
+  
   servo.write(speed);
 
   Serial.print("Distance: ");
