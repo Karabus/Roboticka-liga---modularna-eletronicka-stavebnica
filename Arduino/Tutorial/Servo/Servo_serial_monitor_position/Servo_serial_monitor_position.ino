@@ -1,6 +1,6 @@
 #include <Servo.h>
 
-#define SERVO_PIN 0
+#define SERVO_PIN 2
 
 String inputString = "";
 Servo servo;

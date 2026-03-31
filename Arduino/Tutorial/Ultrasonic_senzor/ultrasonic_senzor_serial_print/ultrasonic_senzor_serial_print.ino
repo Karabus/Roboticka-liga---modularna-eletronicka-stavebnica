@@ -1,6 +1,19 @@
 #define TRIG 3
 #define ECHO 2
 
+float scanDistance(){
+  digitalWrite(TRIG, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+
+  long duration = pulseIn(ECHO, HIGH);
+  float distance = duration * 0.0343 / 2;
+  return distance;
+}
+
 void setup() {
   Serial.begin(115200);
   pinMode(TRIG, OUTPUT);
@@ -10,19 +23,7 @@ void setup() {
 void loop() {
 
   // spustenie merania
-  digitalWrite(TRIG, LOW);
-  delayMicroseconds(2);
-
-  digitalWrite(TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG, LOW);
-
-  // meranie času
-  long duration = pulseIn(ECHO, HIGH);
-
-  // prepočet na cm
-  float distance = duration * 0.0343 / 2;
-
+  float distance scanDsitance();
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");

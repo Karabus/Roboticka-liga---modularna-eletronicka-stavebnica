@@ -4,6 +4,22 @@
 #define ECHO 2
 #define SERVO_PIN 0
 
+float scanDistance(){
+  digitalWrite(TRIG, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+
+  // meranie času
+  long duration = pulseIn(ECHO, HIGH);
+  
+  // prepočet na cm
+  float distance = duration * 0.0343 / 2;
+  return distance;
+}
+
 Servo servo;
 int speed = 90;
 void setup() {
@@ -14,18 +30,9 @@ void setup() {
 }
 
 void loop() {
-  // Ultrazvuk
-  digitalWrite(TRIG, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG, LOW);
-
-  long duration = pulseIn(ECHO, HIGH);
-  float distance = duration * 0.0343 / 2; // cm
-
+  
   // Obmedzíme rozsah
-  distance = constrain(distance, 2, 100);
+  distance = constrain(scanDistance(), 2, 100);
 
   // Prevedieme vzdialenosť na rýchlosť serva
   // bližšie = otáča sa rýchlejšie doprava
