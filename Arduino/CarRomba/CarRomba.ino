@@ -70,8 +70,36 @@ void setup() {
 
 void loop() {
   float distance =  scanDistance();
-  //
-  if (distance < 10) {
+  bool blocking = distance < 10;
+  while (blocking){
+    servoRightWheel.write(90);
+    servoLeftWheel.write(90);
+    servoScaner.write(135);
+    delay(100);
+    distance = scanDistance();
+    blocking = distance < 10;
+    if (!blocking) {
+      turnRight(45);
+    }
+    else {
+      servoScaner.write(45);  
+      distance = scanDistance();
+      blocking = distance < 10;
+      if (!blocking) {
+        turnLeft(45);
+      }
+      else {
+        servoRightWheel.write(180);
+        servoLeftWheel.write(0);
+        delay(200);   
+      }
+    }
+    servoScaner.write(90);  
+  }
+  servoRightWheel.write(0);
+  servoLeftWheel.write(180);
+        
+  /*if (distance < 10) {
     servoRightWheel.write(90);
     servoLeftWheel.write(90);
     servoScaner.write(135);
@@ -92,11 +120,5 @@ void loop() {
       }
     }  
     servoScaner.write(90);  
-  }
-  else{
-    servoRightWheel.write(0);
-    servoLeftWheel.write(180);    
-  }
-
-  //todo
+  }*/
 }
