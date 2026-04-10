@@ -1,8 +1,9 @@
 #include <Servo.h>
 
-#define SERVO_PIN 2
+#define SERVO_PIN 6
 
 String inputString = "";
+int prikaz = 0;
 Servo servo;
 
 int position = 90;
@@ -19,10 +20,13 @@ void loop() {
 
     if (c == '\n') { // Enter
       position = inputString.toInt();
-      if (position >= 0 && position <= 180) {
-        servo.write(position); // nastavi servo na uhol
-        Serial.print("Servo je nastavny na uhli: ");
-        Serial.println(position);
+      if (position >= 500 && position <= 3000) {
+        servo.writeMicroseconds(position); // nastavi servo na uhol
+        Serial.print("Prikaz cislo: ");
+        Serial.print(prikaz);
+        Serial.print(" Servo je nastavny na uhli: ");
+        Serial.println(servo.read());
+        prikaz++;
       } else {
         Serial.println("Neplatna pozicia");
       }

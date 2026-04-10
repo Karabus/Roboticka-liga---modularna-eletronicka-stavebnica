@@ -1,33 +1,36 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
+
 #define BNO055_SAMPLERATE_DELAY_MS (100)
-Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x29, &Wire1);
+
+Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x29, &Wire);
 static imu::Vector<3> euler;
 
 void setup() {
   Serial.begin(115200);
-  while(!Serial);
+  delay(1500); // NAMIesto while(!Serial)
 
-  Wire1.setSDA(2);
-  Wire1.setSCL(3);
-  Wire1.begin();
+  // nastav I2C piny
+  Wire.setSDA(1);
+  Wire.setSCL(2);
+  Wire.begin();
 
   if (!bno.begin()) {
     Serial.println("BNO055 nenajdeny");
-    while (1);
+    return; // NIKDY nepouzivaj while(1)
   }
-  bno.setExtCrystalUse(true);
 
+  bno.setExtCrystalUse(true);
   Serial.println("BNO055 OK");
 }
 
 void loop() {
   euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 
-  float yaw = euler.x();    // otocenie okolo Z (doprava/dolava) 0–360°
-  float roll = euler.z();   // naklonenie do stran  -180-180°
-  float pitch = euler.y();  // naklonenie dopredu/dozadu -180-180°
+  float yaw = euler.x();
+  float roll = euler.z();
+  float pitch = euler.y();
 
   Serial.print("Roll: ");
   Serial.print(roll);

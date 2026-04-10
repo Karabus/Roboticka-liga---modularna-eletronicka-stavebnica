@@ -1,5 +1,5 @@
-#define TRIG 3
-#define ECHO 2
+#define TRIG 0
+#define ECHO 1
 
 float scanDistance(){
   digitalWrite(TRIG, LOW);
@@ -23,7 +23,7 @@ void setup() {
 void loop() {
 
   // spustenie merania
-  float distance scanDsitance();
+  float distance = scanDistance();
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
