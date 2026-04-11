@@ -11,154 +11,140 @@ Servo servoLeftWheel;
 Servo servoRightWheel;
 Servo servoScaner;
 
-const float MIN_SAFE_DISTANCE = 20.0; // cm
+const int SPEED = 90;
+const float MIN_SAFE_DISTANCE = 20.0;
 const long PULSIN_TIMEOUT = 30000;
-static bool blocking = LOW;
+
+bool blocking = false;
+
+// ================== ULTRASONIC ==================
 float scanDistance() {
   digitalWrite(TRIG, LOW);
   delayMicroseconds(2);
   digitalWrite(TRIG, HIGH);
   delayMicroseconds(10);
   digitalWrite(TRIG, LOW);
-  
+
   long duration = pulseIn(ECHO, HIGH, PULSIN_TIMEOUT);
-  
+
   if (duration == 0) {
     Serial.println("Senzor timeout!");
     return -1;
   }
-  
+
   float distance = duration * 0.0343 / 2;
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
-  
+
   return distance;
 }
 
+// ================== POHYB ==================
 void stopRobot() {
   servoLeftWheel.write(90);
   servoRightWheel.write(90);
-  Serial.println("=== Stop");
 }
 
-
 void moveForward() {
-  servoLeftWheel.write(180);   
-  servoRightWheel.write(0);    
-  Serial.println(">>> Dopredu");
+  servoLeftWheel.write(90 + SPEED);
+  servoRightWheel.write(90 - SPEED);
 }
 
 void moveBackward() {
-  servoLeftWheel.write(0);     
-  servoRightWheel.write(180);  
-  Serial.println("<<< Dozadu");
+  servoLeftWheel.write(90 - SPEED);
+  servoRightWheel.write(90 + SPEED);
 }
 
-void rotateLeft(int durationMs) {
-  servoLeftWheel.write(180);     
-  servoRightWheel.write(180);    
-  Serial.println("↻ Otočenie vľavo");
+// ================== ROTÁCIA ==================
+void rotateLeft(int angle) {
+  servoLeftWheel.write(110);
+  servoRightWheel.write(110);
+
+  int durationMs = angle * 14; // doladiť
   delay(durationMs);
+
+  stopRobot();
 }
 
-void rotateRight(int durationMs) {
-  servoLeftWheel.write(0);   
-  servoRightWheel.write(0);  
-  Serial.println("↺ Otočenie vpravo");
+void rotateRight(int angle) {
+  servoLeftWheel.write(70);
+  servoRightWheel.write(70);
+
+  int durationMs = angle * 14; // doladiť
   delay(durationMs);
-}
-void scanLeft() {
-  servoScaner.write(0);
-  Serial.println("📡 Skenujem VĽAVO");
-  delay(300);
+
+  stopRobot();
 }
 
-void scanRight() {
-  servoScaner.write(180);
-  Serial.println("📡 Skenujem VPRAVO");
-  delay(300);
-}
-
-void scanCenter() {
-  servoScaner.write(90);
-  delay(200);
-}
-
+// ================== SETUP ==================
 void setup() {
   Serial.begin(115200);
-  while (!Serial) delay(10);
-  
   delay(1000);
-  Serial.println("\n=== SETUP START ===");
-  
+
   pinMode(TRIG, OUTPUT);
   pinMode(ECHO, INPUT);
-  
+
   servoLeftWheel.attach(PIN_SERVO_LEFT_WHEEL, 1000, 2000);
   servoRightWheel.attach(PIN_SERVO_RIGHT_WHEEL, 1000, 2000);
-  servoScaner.attach(PIN_SERVO_SCANER, 1000, 2000);
-  
-  delay(500);
-  
+  servoScaner.attach(PIN_SERVO_SCANER, 500, 2500);
+
   stopRobot();
-  scanCenter();
-  
-  Serial.println("=== SETUP DONE ===\n");
+  servoScaner.write(90);
+
+  Serial.println("READY");
 }
 
+// ================== LOOP ==================
 void loop() {
-  // KROK 1: Pohyb dopredu
+
+  // dopredu
   moveForward();
-  delay(200);
-  
-  // KROK 2: Skontroluj predný senzor
+  delay(50);
+
   float distFront = scanDistance();
   blocking = distFront > 0 && distFront <= MIN_SAFE_DISTANCE;
+
   while (blocking) {
-    // Prekážka vpredu!
-    Serial.println("⚠️  Prekážka vpredu!\n");
+    Serial.println("⚠️ Prekážka!");
+
     stopRobot();
-    delay(200);
-    
-    // KROK 3: Pozri sa VĽAVO
-    scanLeft();
+    delay(100);
+
+    // ===== POZRI VĽAVO =====
+    servoScaner.write(0);
+    delay(300);
     float distLeft = scanDistance();
-    blocking = distLeft > 0 && distLeft <= (MIN_SAFE_DISTANCE*sqrt(2));
-    if (!blocking) {
-      // VĽAVO je voľne -> otoč sa tam a pokračuj
-      Serial.println("✓ Vľavo je voľne! Otáčam sa vľavo...\n");
-      scanCenter();
-      rotateLeft(300); // ~45° otočenie
-      return; // Idi na ďalší loop - pohyb dopredu
+
+    if (distLeft > MIN_SAFE_DISTANCE || distLeft < 0) {
+      Serial.println("✓ Vľavo voľné");
+      servoScaner.write(90);
+      rotateLeft(90);
+      return;
     }
-    
-    // KROK 4: Vľavo blokuje -> Pozri sa VPRAVO
-    Serial.println("✗ Vľavo BLOKUJE! Skúšam vpravo...\n");
-    scanRight();
+
+    // ===== POZRI VPRAVO =====
+    servoScaner.write(180);
+    delay(600);
     float distRight = scanDistance();
-    blocking =  distRight > 0 && distRight <= (MIN_SAFE_DISTANCE*sqrt(2));
-    if (!blocking) {
-      // VPRAVO je voľne -> otoč sa tam a pokračuj
-      Serial.println("✓ Vpravo je voľne! Otáčam sa vpravo...\n");
-      scanCenter();
-      rotateRight(300); // ~45° otočenie
-      return; // Idi na ďalší loop
+
+    if (distRight > MIN_SAFE_DISTANCE || distRight < 0) {
+      Serial.println("✓ Vpravo voľné");
+      servoScaner.write(90);
+      rotateRight(90);
+      return;
     }
-    
-    // KROK 5: Vľavo aj vpravo blokuje -> Ide DOZADU 1 sekundu
-    Serial.println("✗ Vľavo aj vpravo BLOKUJE! Idem dozadu!\n");
-    scanCenter();
+
+    // ===== NIČ VOĽNÉ =====
+    Serial.println("✗ Nikde voľné -> cúvam");
+
+    servoScaner.write(90);
     moveBackward();
-    delay(1000);
+    delay(800);
     stopRobot();
     delay(200);
-    
-    // Teraz sa otoč VĽAVO (ak tam bolo voľnejšie) alebo VPRAVO
-    
   }
-  
-  Serial.println("✓ Cesta voľná, pokračujem dopredu\n");
-  delay(300);
-  
+
+  Serial.println("✓ Voľno dopredu");
+  delay(200);
 }

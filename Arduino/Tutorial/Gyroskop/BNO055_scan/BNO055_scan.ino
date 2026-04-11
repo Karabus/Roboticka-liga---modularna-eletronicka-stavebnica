@@ -4,8 +4,8 @@ void setup() {
   Serial.begin(115200);
   delay(1500);
 
-  Wire1.setSDA(1);
-  Wire1.setSCL(2);
+  Wire1.setSDA(2);
+  Wire1.setSCL(3);
   Wire1.begin();
 
   Serial.println("I2C scan...");

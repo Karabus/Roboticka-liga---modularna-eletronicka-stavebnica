@@ -11,7 +11,7 @@ Servo servoLeftWheel;
 Servo servoRightWheel;
 Servo servoScaner;
 
-const float MIN_SAFE_DISTANCE = 50.0; // cm
+const float MIN_SAFE_DISTANCE = 20.0; // cm
 const long PULSIN_TIMEOUT = 30000;
 static bool located = LOW;
 static float CurDistance = 0.0f;
@@ -65,7 +65,7 @@ void rotateLeft(int angle) {
   Serial.println(" stupnov");
 
   // vypocet casu otacania (ms) - doladit experimentom
-  int durationMs = angle * 12; // 6 ms na 1 stupeň, kalibrovat
+  int durationMs = angle * 14; // 14 ms na 1 stupeň, kalibrovat
   delay(durationMs);
 
   stopRobot(); // zastavenie po otacani
@@ -80,7 +80,7 @@ void rotateRight(int angle) {
   Serial.println(" stupnov");
 
   // vypocet casu otacania (ms) - doladit experimentom
-  int durationMs = angle * 12; // 6 ms na 1 stupeň, kalibrovat
+  int durationMs = angle * 14; // 14 ms na 1 stupeň, kalibrovat
   delay(durationMs);
 
   stopRobot(); // zastavenie po otacani
@@ -154,7 +154,7 @@ void loop() {
 
       CurDistance = scanDistance();
 
-      if (CurDistance != -1 && CurDistance < MIN_SAFE_DISTANCE) {
+      if (CurDistance != -1 && CurDistance < 40) {
         // sme na prekážke
         if (!inObstacle) {
           startAngle = angle;

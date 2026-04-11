@@ -6,7 +6,7 @@ Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x29, &Wire1);
 
 void setup() {
   Serial.begin(115200);
-  while(!Serial);
+  delay(1500);
 
   Wire1.setSDA(2);
   Wire1.setSCL(3);
@@ -14,7 +14,7 @@ void setup() {
 
   if (!bno.begin()) {
     Serial.println("BNO055 nenajdeny");
-    while (1);
+    return;
   }
 
   bno.setExtCrystalUse(true);
