@@ -1,6 +1,6 @@
-int joyX = A0;
-int joyY = A1;
-int button = 15;
+const int joyX = A0;
+const int joyY = A1;
+const int button = 15;
 
 void setup() {
   Serial.begin(115200);
