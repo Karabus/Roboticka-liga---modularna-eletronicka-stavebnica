@@ -45,7 +45,7 @@ void stopRobot() {
 
 
 void moveForward() {
-  servoLeftWheel.write(110);   
+  servoLeftWheel.write(108);   
   servoRightWheel.write(70);    
   Serial.println(">>> Dopredu");
 }
@@ -80,7 +80,7 @@ void rotateRight(int angle) {
   Serial.println(" stupnov");
 
   // vypocet casu otacania (ms) - doladit experimentom
-  int durationMs = angle * 14; // 14 ms na 1 stupeň, kalibrovat
+  int durationMs = angle * 18; // 14 ms na 1 stupeň, kalibrovat
   delay(durationMs);
 
   stopRobot(); // zastavenie po otacani
@@ -147,7 +147,8 @@ void loop() {
     int startAngle = -1;
     int endAngle = -1;
     bool inObstacle = false;
-
+    servoScaner.write(5); 
+    delay(500);
     for (int angle = 5; angle <= 175; angle++) {
       servoScaner.write(angle);
       delay(20);  // nech servu stihne dojst na poziciu

@@ -5,7 +5,7 @@
 String inputString = "";
 Servo servo;
 
-int position = 90;
+int position = 180;
 void setup() {
   Serial.begin(115200);
   servo.attach(SERVO_PIN,500,2500);

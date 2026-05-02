@@ -61,7 +61,7 @@ void rotateLeft(int angle) {
   servoLeftWheel.write(110);
   servoRightWheel.write(110);
 
-  int durationMs = angle * 14; // doladiť
+  int durationMs = angle * 22; // doladiť
   delay(durationMs);
 
   stopRobot();
@@ -71,7 +71,7 @@ void rotateRight(int angle) {
   servoLeftWheel.write(70);
   servoRightWheel.write(70);
 
-  int durationMs = angle * 14; // doladiť
+  int durationMs = angle * 22; // doladiť
   delay(durationMs);
 
   stopRobot();
