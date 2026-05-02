@@ -3,7 +3,6 @@
 #define SERVO_PIN 12
 
 String inputString = "";
-int prikaz = 0;
 Servo servo;
 
 int position = 90;
@@ -22,11 +21,8 @@ void loop() {
       position = inputString.toInt();
       if (position >= 0 && position <= 180) {
         servo.write(position); // nastavi servo na uhol
-        Serial.print("Prikaz cislo: ");
-        Serial.print(prikaz);
         Serial.print(" Servo je nastavny na uhli: ");
         Serial.println(servo.read());
-        prikaz++;
       } else {
         Serial.println("Neplatna pozicia");
       }
