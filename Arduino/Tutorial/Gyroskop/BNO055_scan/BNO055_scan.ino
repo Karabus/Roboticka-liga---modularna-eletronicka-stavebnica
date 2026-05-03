@@ -1,29 +1,24 @@
 #include <Wire.h>
-
+int adresa = 0;
 void setup() {
   Serial.begin(115200);
-  delay(1500);
+  Wire.setSDA(4);
+  Wire.setSCL(5);
+  Wire.begin();
+  delay(1000);
 
-  Wire1.setSDA(2);
-  Wire1.setSCL(3);
-  Wire1.begin();
-
-  Serial.println("I2C scan...");
+  Serial.println("Hladam I2C zariadenia...");
+  for (byte addr = 1; addr < 127; addr++) {
+    Wire.beginTransmission(addr);
+    if (Wire.endTransmission() == 0) {
+      Serial.print("Najdene zariadenie na adrese: 0x");
+      Serial.println(addr, HEX);
+      adresa = addr;
+    }
+  }
+  Serial.println("Hotovo.");
 }
 
 void loop() {
-  byte error, address;
-
-  for(address = 1; address < 127; address++ ) {
-    Wire1.beginTransmission(address);
-    error = Wire1.endTransmission();
-
-    if (error == 0) {
-      Serial.print("I2C device at 0x");
-      Serial.println(address, HEX);
-    }
-  }
-
-  Serial.println("scan done");
-  delay(3000);
+  Serial.println(adresa, HEX);
 }
