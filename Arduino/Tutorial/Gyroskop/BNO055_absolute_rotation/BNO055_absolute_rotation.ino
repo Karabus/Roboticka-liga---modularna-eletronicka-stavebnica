@@ -23,14 +23,15 @@ void setup() {
   Serial.println("Hotovo.");
 
   if (adresa > 0) {
-  bno = Adafruit_BNO055(55, adresa, &Wire);
-  if (bno.begin()) {
-    active = HIGH;
-    Serial.println("BNO055 OK");
-  } else {
-    Serial.println("BNO055 begin() zlyhalo");
+    bno = Adafruit_BNO055(55, adresa, &Wire);
+    if (bno.begin()) {
+      active = HIGH;
+      Serial.println("BNO055 OK");
+    } 
+    else {
+      Serial.println("BNO055 begin() zlyhalo");
+    }
   }
-}
 }
 
 void loop() {
