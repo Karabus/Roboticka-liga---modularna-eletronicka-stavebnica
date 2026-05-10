@@ -2,28 +2,35 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <VL53L0X.h>
+#include <Servo.h>
 int adresa = 0;
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
-VL53L0X sensor;
-
+static VL53L0X sensors[3];
 bool active = LOW;
+const int laserPins[3] = {0,2,4}; // < ^ >
 
-const int laserPins[3]] = {0,2,4} // < ^ >
+class Node{
+  public:           // <    ^     >     v
+    Node *neigh[4] = {NULL, NULL, NULL, NULL};
+    void addNeigh(int i, Node* node){
+      if (0<= i && i<=3){neigh[i]=node;}
+    }
+};
+Node root;
 
-int setupLaser(int dir){ // 0 = <, 2 = ^, 4 = >
-  Wire.setSDA(laserPins[dir]);  
-  Wire.setSCL(laserPins[dir]+1); 
-  Wire.begin();
-  
-
+int setupLasers(){ // 0 = <, 2 = ^, 4 = >
   Serial.println("VL53L0X test...");
+  for (int i = 0; i < 3;i++){
+    Wire.setSDA(laserPins[i]);  
+    Wire.setSCL(laserPins[i]+1); 
+    Wire.begin();
 
-  if (!lox.begin()) {
-    Serial.println("Sensor nenajdeny!");
-    return -1;
+    if (!sensors[i].init()) {
+      Serial.println("Sensor " + String(i) +" nenajdeny!");
+      return -1;
+    }
   }
-
-  Serial.println("Sensor OK");
+  Serial.println("Sensors OK");
   return 0;
 }
 
@@ -61,13 +68,14 @@ int setupGyroscope(){
 void setup() {
   // put your setup code here, to run once:
   int init = setupGyroscope();
-  if (!init){
+  if (init!=0){
     while(1){}
   }
-  init = 
+  init = setupLasers();
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  
 
 }
