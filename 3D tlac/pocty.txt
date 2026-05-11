@@ -1,0 +1,38 @@
+1x1+1x1.stl - 160x - biela
+1x1+1x1L.stl - 40x - biela
+1x1+1x3.stl - 40x - biela
+1x1+1x3L.stl - 40x - biela
+1x1+2x1.stl - 40x - biela
+1x1L+1x1L.stl - 80x - biela
+1x2+1x2.stl - 40x - biela
+2x1+2x1.stl - 160x - biela
+3x1+3x1.stl - 120x - biela
+
+1x10.stl - 80x - biela
+1x11.stl - 80x - biela
+1x12.stl - 80x - biela
+1x13.stl - 40x - biela
+1x14.stl - 40x - biela
+1x15.stl - 40x - biela
+1x2.stl - 80x - biela
+1x3.stl - 80x - biela
+1x4.stl - 120x - biela
+1x5.stl - 120x - biela
+1x6.stl - 120x - biela
+1x7.stl - 120x - biela
+1x8.stl - 80x - biela
+1x9.stl - 80x - biela
+Ball holder.stl - 20x - biela
+
+Servo XY1.stl - 40x - modra
+Servo XY2.stl - 40x - modra
+Servo XY3.stl - 40x - modra
+Servo XY4.stl - 40x - modra
+Servo XY5.stl - 40x - modra
+Servo XYZ-Test.stl - 20x - modra
+Servo XYZ1.stl - 40x - modra
+Servo YZ1.stl - 40x - modra
+Servo YZ2.stl - 40x - modra
+
+zvukovy senzor.stl - 20x - cervena
+Joystick.stl - 40x - cervena
