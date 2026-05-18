@@ -4,9 +4,10 @@
 #include <VL53L0X.h>
 #include <Servo.h>
 #include <array>
+#include <queue>
 
 // === XSHUT piny pre VL53L0X ===
-const int xshutPins[3] = {6, 7, 8}; // vľavo, vpredu, vpravo
+const int xshutPins[3] = {0, 1, 2}; // vľavo, vpredu, vpravo
 const uint8_t sensorAddrs[3] = {0x30, 0x31, 0x32};
 
 struct SensorData {
@@ -22,27 +23,32 @@ static SensorData d = {0, 0, 0, 0.0f, 0};
 const int8_t mapDirection[4][2] = {
   { 1,  0},  // 0 = >
   { 0,  1},  // 1 = ^
-  {-1,  0},  // 2 = 
+  {-1,  0},  // 2 = <
   { 0, -1}   // 3 = v
 };
 
-uint8_t curDirection = 0;
+static uint8_t curDirection = 0;
+static uint8_t curX = 0;
+static uint8_t curY = 0;
+
 const int   STOP    = 90;
 const int   SPEED   = 20;
 const float EPSILON = 2.0f;
 
 // === I2C ===
-#define VL_SDA  0
-#define VL_SCL  1
-#define BNO_SDA 2
-#define BNO_SCL 3
+#define I2C_SDA  4
+#define I2C_SCL  5
+#define BNO_SDA 6
+#define BNO_SCL 7
+
+TwoWire &BUS = Wire;
 
 // === Servo piny ===
 #define SERVO_LEFT_PIN  9
 #define SERVO_RIGHT_PIN 10
 
 VL53L0X sensors[3];
-Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire1);
+Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &BUS);
 Servo servoLeft, servoRight;
 bool gyroActive = false;
 
@@ -70,6 +76,7 @@ class Node {
 };
 
 Node* root = nullptr;
+static std::array<std::array<Node*,7>,7> mapa;
 
 // ============================================================
 // SETUP GYROSKOP
@@ -106,8 +113,8 @@ int setupGyroscope() {
 // SETUP VL53L0X
 // ============================================================
 int setupLasers() {
-  Wire.setSDA(VL_SDA);
-  Wire.setSCL(VL_SCL);
+  Wire.setSDA(I2C_SDA);
+  Wire.setSCL(I2C_SCL);
   Wire.begin();
 
   for (int i = 0; i < 3; i++) {
@@ -193,14 +200,23 @@ void goForward() {
   // Aktualizuj graf
   if (root->neigh[curDirection] != nullptr) {
     root = root->neigh[curDirection];
-  } else {
+  } 
+  else {
     int newX = root->x + mapDirection[curDirection][0];
     int newY = root->y + mapDirection[curDirection][1];
-    Node* next = new Node(newX, newY);
+
+    if (newX < 0 || newX >= 7 || newY < 0 || newY >= 7) {
+      Serial.println("CHYBA: mimo mapy!");
+      return;
+    }
+
+    Node* next = mapa[newX][newY];
     root->addNeigh(curDirection, next);
     int opposite = (curDirection + 2) % 4;
     next->addNeigh(opposite, root);
     root = next;
+    curX = newX;
+    curY = newY;
   }
 
   // Cieľový uhol = smer pohybu
@@ -270,91 +286,28 @@ void explore() {
   }
 }
 
-// ============================================================
-// ULOŽENIE MAPY — Serial výstup pre PC
-// ============================================================
-void sendMap() {
-  // Nájdi rozsah x,y v grafe (BFS)
-  int minX = 0, maxX = 0, minY = 0, maxY = 0;
-
-  // BFS na nájdenie rozmerov
-  std::array<Node*, 256> queue;
-  std::array<Node*, 256> visited;
-  int head = 0, tail = 0, visitedCount = 0;
-  queue[tail++] = root;
-
-  while (head != tail) {
-    Node* cur = queue[head++];
-    bool alreadyVisited = false;
-    for (int i = 0; i < visitedCount; i++) {
-      if (visited[i] == cur) { alreadyVisited = true; break; }
-    }
-    if (alreadyVisited) continue;
-    visited[visitedCount++] = cur;
-
-    if (cur->x < minX) minX = cur->x;
-    if (cur->x > maxX) maxX = cur->x;
-    if (cur->y < minY) minY = cur->y;
-    if (cur->y > maxY) maxY = cur->y;
-
-    for (int i = 0; i < 4; i++) {
-      if (cur->neigh[i] != nullptr) queue[tail++] = cur->neigh[i];
-    }
-  }
-
-  int width  = maxX - minX + 1;
-  int height = maxY - minY + 1;
-
-  // Vytvor 2D mapu
-  char maze[16][16];
-  for (int y = 0; y < height; y++)
-    for (int x = 0; x < width; x++)
-      maze[y][x] = '?';
-
-  // Znovu BFS — tentokrát kresli
-  head = tail = visitedCount = 0;
-  queue[tail++] = root;
-
-  while (head != tail) {
-    Node* cur = queue[head++];
-    bool alreadyVisited = false;
-    for (int i = 0; i < visitedCount; i++) {
-      if (visited[i] == cur) { alreadyVisited = true; break; }
-    }
-    if (alreadyVisited) continue;
-    visited[visitedCount++] = cur;
-
-    int mx = cur->x - minX;
-    int my = cur->y - minY;
-    maze[my][mx] = cur->visited ? ' ' : '?';
-
-    // Steny — bunky bez suseda
-    for (int i = 0; i < 4; i++) {
-      if (cur->neigh[i] != nullptr) {
-        queue[tail++] = cur->neigh[i];
-      }
-    }
-  }
-
-  // Štartovná pozícia
-  maze[-minY][-minX] = 'S';
-
-  // Odošli na PC
-  Serial.println("MAZE_START");
-  for (int y = 0; y < height; y++) {
-    for (int x = 0; x < width; x++) Serial.print(maze[y][x]);
-    Serial.println();
-  }
-  Serial.println("MAZE_END");
+int goToPos(uint8_t nextX, uint8_t nextY){
+ return 1;
 }
 
+void setupI2C() {
+  BUS.setSDA(I2C_SDA);
+  BUS.setSCL(I2C_SCL);
+  BUS.begin();
+  delay(100);
+}
 // ============================================================
 // SETUP & LOOP
 // ============================================================
 void setup() {
+  setupI2C();
   Serial.begin(115200);
   while (!Serial) delay(10);
-
+  for (int y = 0; y < 7; y++){
+    for (int x = 0; x < 7; x++){
+        mapa[y][x] = new Node(x,y);;
+    }
+  }
   servoLeft.attach(SERVO_LEFT_PIN);
   servoRight.attach(SERVO_RIGHT_PIN);
   stopMotors();
@@ -362,22 +315,26 @@ void setup() {
   if (setupGyroscope() != 0) { Serial.println("FATAL: Gyroskop!"); while (1) {} }
   if (setupLasers()    != 0) { Serial.println("FATAL: Lasery!");   while (1) {} }
 
-  root = new Node(0, 0);
+  root = mapa[0][0];
   Serial.println("System pripraveny. Stlac ENTER pre start...");
   while (!Serial.available()) {}
   Serial.read();
 }
 
 void loop() {
-  explore();
+  int left  = sensors[0].readRangeContinuousMillimeters();
+  int front = sensors[1].readRangeContinuousMillimeters();
+  int right = sensors[2].readRangeContinuousMillimeters();
 
-  // Pošli mapu po každých 10 krokoch alebo na príkaz "GET"
-  static int steps = 0;
-  if (++steps % 10 == 0) sendMap();
+  Serial.print(left);
+  Serial.print(" | ");
+  Serial.print(front);
+  Serial.print(" | ");
+  Serial.println(right);
 
+  delay(50);
   if (Serial.available()) {
     String cmd = Serial.readStringUntil('\n');
     cmd.trim();
-    if (cmd == "GET") sendMap();
   }
 }
