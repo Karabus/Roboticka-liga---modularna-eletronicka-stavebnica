@@ -12,7 +12,7 @@
 2x6-L.stl - 40x - biela
 2x7-L.stl - 40x - biela
 
-3x3-L.stl - 80x - biela
+3x3-L.stl - 120x - biela
 3x4-L.stl - 40x - biela
 3x5-L.stl - 40x - biela
 3x6-L.stl - 40x - biela
@@ -37,6 +37,9 @@
 3x7.stl - 40x - zltá
 3x8.stl - 40x - zltá
 3x9.stl - 20x - zltá
+3x10.stl - 40x - zltá
+3x11.stl - 20x - zltá
+3x12.stl - 20x - zltá
 
 4x4.stl - 80x - zltá
 4x5.stl - 40x - zltá
@@ -77,24 +80,36 @@
 4x3-U.stl - 20x - cierna
 4x4-U.stl - 20x - cierna
 4x5-U.stl - 20x - cierna
+4x6-U.stl - 20x - cierna
+4x7-U.stl - 20x - cierna
+4x8-U.stl - 20x - cierna
 
 5x1-U.stl - 20x - cierna
 5x2-U.stl - 40x - cierna
 5x3-U.stl - 20x - cierna
 5x4-U.stl - 20x - cierna
 5x5-U.stl - 20x - cierna
+5x6-U.stl - 20x - cierna
+5x7-U.stl - 20x - cierna
+5x8-U.stl - 20x - cierna
 
 6x1-U.stl - 20x - cierna
 6x2-U.stl - 20x - cierna
 6x3-U.stl - 20x - cierna
 6x4-U.stl - 20x - cierna
 6x5-U.stl - 20x - cierna
+6x6-U.stl - 20x - cierna
+6x7-U.stl - 20x - cierna
+6x8-U.stl - 20x - cierna
 
 7x1-U.stl - 20x - cierna
 7x2-U.stl - 20x - cierna
 7x3-U.stl - 20x - cierna
 7x4-U.stl - 20x - cierna
 7x5-U.stl - 20x - cierna
+7x6-U.stl - 20x - cierna
+7x7-U.stl - 20x - cierna
+7x8-U.stl - 20x - cierna
 
 8x1-U.stl - 20x - cierna
 8x2-U.stl - 20x - cierna
@@ -113,5 +128,3 @@
 9x6-U.stl - 20x - cierna
 9x7-U.stl - 20x - cierna
 9x8-U.stl - 20x - cierna
-
-
