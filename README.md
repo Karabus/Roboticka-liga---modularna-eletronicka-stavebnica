@@ -2,7 +2,7 @@
 
 Projekt pre výučbu **robotiky, elektroniky a programovania** v rámci súťaže **Robotická liga**.
 
-Robotická liga je robotická súťaž určená pre deti vo veku **9 – 16 rokov**, ktorej cieľom je rozvíjať technické myslenie, kreativitu a schopnosť riešiť problémy pomocou technológií.
+Robotická liga je robotická súťaž určená pre deti vo veku **do 18 rokov**, ktorej cieľom je rozvíjať technické myslenie, kreativitu a schopnosť riešiť problémy pomocou technológií.
 
 Tento repozitár obsahuje materiály pre **novú kategóriu súťaže založenú na modulárnej robotickej stavebnici**, ktorá umožňuje účastníkom jednoducho experimentovať s rôznymi elektronickými komponentmi a vytvárať vlastné robotické projekty.
 
@@ -59,7 +59,7 @@ Súťaž je rozdelená do **troch hlavných častí**, ktoré postupne zvyšujú
 
 ## 1 Tutorial
 
-V tejto časti sa účastníci zoznámia so základnými komponentmi stavebnice.
+V tejto časti sa účastníci zoznámia so základnými komponentmi stavebnice a popritom budú staviať jednoduchých robotov.
 
 Každý komponent obsahuje:
 
@@ -73,7 +73,10 @@ Príklady komponentov:
 - ultrazvukový senzor
 - tlačidlá
 - LED diódy
-- rôzne senzory
+- laserový senzor
+- gyroskop
+- čiarový senzor
+- joystick
 
 Cieľom je naučiť účastníkov **základy elektroniky a programovania**.
 
@@ -81,7 +84,7 @@ Cieľom je naučiť účastníkov **základy elektroniky a programovania**.
 
 ## 2 Naše roboty
 
-V druhej časti dostanú účastníci kompletný návod na zostavenie robota.
+V druhej časti dostanú účastníci kompletný návod na zostavenie robota. Budú k dispozícií aj modelové kódy a zostavy z 1. kola a tiež aj 3D modely súčiastok na printables.
 
 Obsah tejto časti:
 
@@ -125,7 +128,7 @@ Po absolvovaní projektu by mali účastníci rozumieť základom:
 
 # Ako začať
 
-Všetko je v `TUTORIAL.md`
+Všetko je v `Prvé kolo` na stránke [3D Ligi](3dliga.robotika.sk/wiki)
 
 ---
 

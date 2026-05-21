@@ -9,7 +9,7 @@
 // === XSHUT piny pre VL53L0X ===
 const int xshutPins[3] = {0, 1, 2}; // vľavo, vpredu, vpravo
 const uint8_t sensorAddrs[3] = {0x30, 0x31, 0x32};
-
+static imu::Vector<3> rotations;
 struct SensorData {
   int left, front, right;
   float heading;
@@ -44,8 +44,8 @@ const float EPSILON = 2.0f;
 TwoWire &BUS = Wire;
 
 // === Servo piny ===
-#define SERVO_LEFT_PIN  9
-#define SERVO_RIGHT_PIN 10
+#define SERVO_LEFT_PIN  10
+#define SERVO_RIGHT_PIN 11
 
 VL53L0X sensors[3];
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &BUS);
@@ -321,16 +321,27 @@ void setup() {
   Serial.read();
 }
 
+
+
 void loop() {
   int left  = sensors[0].readRangeContinuousMillimeters();
   int front = sensors[1].readRangeContinuousMillimeters();
   int right = sensors[2].readRangeContinuousMillimeters();
+  rotations = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 
   Serial.print(left);
   Serial.print(" | ");
   Serial.print(front);
   Serial.print(" | ");
-  Serial.println(right);
+  Serial.print(right);
+  Serial.print(" | ");
+  Serial.print(right);
+  Serial.print(" | ");
+  Serial.print(rotations.x()); 
+  Serial.print(" | ");
+  Serial.print(rotations.y());
+  Serial.print(" | ");
+  Serial.println(rotations.z());
 
   delay(50);
   if (Serial.available()) {
