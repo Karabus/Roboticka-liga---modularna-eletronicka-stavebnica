@@ -5,11 +5,18 @@
 #include <Servo.h>
 #include <array>
 #include <queue>
+#include <algorithm>
+#include <LittleFS.h>
 
 // === XSHUT piny pre VL53L0X ===
 const int xshutPins[3] = {0, 1, 2}; // vľavo, vpredu, vpravo
 const uint8_t sensorAddrs[3] = {0x30, 0x31, 0x32};
-
+<<<<<<< Updated upstream
+static imu::Vector<3> rotations;
+=======
+const uint8_t MAZE_H = 7;
+const uint8_t MAZE_W = 7;
+>>>>>>> Stashed changes
 struct SensorData {
   int left, front, right;
   float heading;
@@ -44,8 +51,8 @@ const float EPSILON = 2.0f;
 TwoWire &BUS = Wire;
 
 // === Servo piny ===
-#define SERVO_LEFT_PIN  9
-#define SERVO_RIGHT_PIN 10
+#define SERVO_LEFT_PIN  10
+#define SERVO_RIGHT_PIN 11
 
 VL53L0X sensors[3];
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &BUS);
@@ -76,7 +83,7 @@ class Node {
 };
 
 Node* root = nullptr;
-static std::array<std::array<Node*,7>,7> mapa;
+static std::array<std::array<Node*, MAZE_H>,MAZE_W> mapa;
 
 // ============================================================
 // SETUP GYROSKOP
@@ -197,7 +204,6 @@ void turn(int8_t dir) {
 }
 
 void goForward() {
-  // Aktualizuj graf
   if (root->neigh[curDirection] != nullptr) {
     root = root->neigh[curDirection];
   } 
@@ -205,7 +211,7 @@ void goForward() {
     int newX = root->x + mapDirection[curDirection][0];
     int newY = root->y + mapDirection[curDirection][1];
 
-    if (newX < 0 || newX >= 7 || newY < 0 || newY >= 7) {
+    if (newX < 0 || newX >= MAZE_W || newY < 0 || newY >= MAZE_H) {
       Serial.println("CHYBA: mimo mapy!");
       return;
     }
@@ -222,7 +228,7 @@ void goForward() {
   // Cieľový uhol = smer pohybu
   float targetAngle = curDirection * 90.0f;
   unsigned long startTime = millis();
-  const unsigned long MOVE_TIME = 800; // ms — kalibruj podľa bunky
+  const unsigned long MOVE_TIME = 800; // ms
 
   while (millis() - startTime < MOVE_TIME) {
     // Načítaj aktuálny uhol
@@ -237,7 +243,7 @@ void goForward() {
 
     // Korekcia — čím väčšia chyba, tým väčšia korekcia
     // Obmedzená na MAX_CORRECTION aby sa robot nepretočil
-    const float KP          = 0.3f; // zosilnenie — kalibruj
+    const float KP          = 0.3f; // zosilnenie
     const int   MAX_CORRECT = 15;   // max odchýlka od SPEED
 
     int correction = (int)(KP * err);
@@ -286,8 +292,101 @@ void explore() {
   }
 }
 
-int goToPos(uint8_t nextX, uint8_t nextY){
- return 1;
+int goToPos(uint8_t nextX, uint8_t nextY) {
+  if (curX == nextX && curY == nextY) return 0;
+
+  Node* target = mapa[nextX][nextY];
+
+  // === BFS ===
+  std::queue<Node*> bfsQueue;
+  std::array<std::array<Node*, 7>, 7> parent;
+  std::array<std::array<int8_t, 7>, 7> parentDir; // smer ktorým sme prišli
+
+  for (auto& row : parent)    row.fill(nullptr);
+  for (auto& row : parentDir) row.fill(-1);
+
+  parent[root->x][root->y] = root;
+  bfsQueue.push(root);
+
+  while (!bfsQueue.empty()) {
+    Node* cur = bfsQueue.front();
+    bfsQueue.pop();
+
+    if (cur == target) break;
+
+    for (int8_t d = 0; d < 4; d++) {
+      Node* nb = cur->neigh[d];
+      if (nb && parent[nb->x][nb->y] == nullptr) {
+        parent[nb->x][nb->y]    = cur;
+        parentDir[nb->x][nb->y] = d;   // smer z cur → nb
+        bfsQueue.push(nb);
+      }
+    }
+  }
+
+  if (parent[nextX][nextY] == nullptr) {
+    Serial.println("Cesta nenajdena!");
+    return -1;
+  }
+
+  // === Rekonštrukcia cesty ako zoznam smerov ===
+  std::vector<uint8_t> path;
+  Node* cur = target;
+
+  while (cur != root) {
+    int8_t d = parentDir[cur->x][cur->y];
+    path.push_back((uint8_t)d);
+    cur = parent[cur->x][cur->y];
+  }
+
+  std::reverse(path.begin(), path.end());
+
+  // Debug výpis
+  const char* dirSymbol[] = {">", "^", "<", "v"};
+  Serial.print("Cesta: ");
+  for (uint8_t d : path) Serial.print(dirSymbol[d]);
+  Serial.println();
+
+  // === Vykonanie cesty ===
+  for (uint8_t d : path) {
+    // Otoč sa na požadovaný smer
+    int8_t diff = ((int8_t)d - (int8_t)curDirection + 4) % 4;
+    if      (diff == 1) turn(3);         // +90° → doprava
+    else if (diff == 3) turn(1);         // -90° → doľava
+    else if (diff == 2) { turn(1); turn(1); } // 180° → otočenie
+
+    goForward();
+  }
+
+  return 0;
+}
+// ============================================================
+// ULOŽENIE DO FLASH
+// ============================================================
+void saveGraph() {
+  if (!LittleFS.begin()) { Serial.println("LittleFS: chyba!"); return; }
+
+  File f = LittleFS.open("/maze.txt", "w");
+  if (!f) { Serial.println("Chyba pri otvarani!"); return; }
+
+  for (int y = 0; y < MAZE_H; y++) {
+    for (int x = 0; x < MAZE_W; x++) {
+      Node* cur = mapa[y][x];
+      if (!cur) continue;
+
+      // Format: N: x, y, >, ^, <, v
+      f.print("N: ");
+      f.print(cur->x); f.print(", ");
+      f.print(cur->y); f.print(", ");
+      f.print(cur->neigh[0] ? 1 : 0); f.print(", ");
+      f.print(cur->neigh[1] ? 1 : 0); f.print(", ");
+      f.print(cur->neigh[2] ? 1 : 0); f.print(", ");
+      f.println(cur->neigh[3] ? 1 : 0);
+    }
+  }
+
+  f.close();
+  Serial.println("Mapa ulozena do /maze.txt");
 }
 
 void setupI2C() {
@@ -303,8 +402,8 @@ void setup() {
   setupI2C();
   Serial.begin(115200);
   while (!Serial) delay(10);
-  for (int y = 0; y < 7; y++){
-    for (int x = 0; x < 7; x++){
+  for (int y = 0; y < MAZE_H; y++){
+    for (int x = 0; x < MAZE_W; x++){
         mapa[y][x] = new Node(x,y);;
     }
   }
@@ -321,16 +420,27 @@ void setup() {
   Serial.read();
 }
 
+
+
 void loop() {
   int left  = sensors[0].readRangeContinuousMillimeters();
   int front = sensors[1].readRangeContinuousMillimeters();
   int right = sensors[2].readRangeContinuousMillimeters();
+  rotations = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 
   Serial.print(left);
   Serial.print(" | ");
   Serial.print(front);
   Serial.print(" | ");
-  Serial.println(right);
+  Serial.print(right);
+  Serial.print(" | ");
+  Serial.print(right);
+  Serial.print(" | ");
+  Serial.print(rotations.x()); 
+  Serial.print(" | ");
+  Serial.print(rotations.y());
+  Serial.print(" | ");
+  Serial.println(rotations.z());
 
   delay(50);
   if (Serial.available()) {

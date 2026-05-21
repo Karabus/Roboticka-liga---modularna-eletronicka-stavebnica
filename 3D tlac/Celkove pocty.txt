@@ -1,4 +1,4 @@
-Nazov - celkovy pocet - farba - pocet pre stavebnicu - Roztriedene
+Nazov - celkovy pocet - farba - pocet pre stavebnicu - Vytlacene - Roztriedene
 1x1+1x1.stl - 160x - biela - 8x - Ok - Roz
 1x1+1x(1+2L).stl - 40x - biela - 2x - Ok - Roz
 1x1+1x3.stl - 40x - biela - 2x - Ok - Roz
@@ -35,6 +35,7 @@ GrabberHolder.stl - 20x - biela - 1x - Ok - Roz
 Spur Gear (24 teeth) with ball barring - 20x - biela - 1x - Ok - Roz
 Servo Spur Gear (24 teeth) - 20x - biela - 1x - +20 - Dot
 FlatWasher.stl - 80x - biela - 4x - Ok - Roz
+Stojan.stl - 20x - biela - 1x - Ok - Roz
 
 2x2-L.stl - 120x - biela - 6x - Ok - Roz
 2x3-L.stl - 80x - biela - 4x - Ok - Roz
@@ -72,8 +73,8 @@ Servo XY1.stl - 40x - modra - 2x - Ok - Roz
 Servo XY2.stl - 40x - modra - 2x - Ok - Roz
 Servo XY3.stl - 40x - modra - 2x - Ok - Roz
 Servo XY4.stl - 40x - modra - 2x - Ok - Roz
-Servo XY5.stl - 40x - modra - 2x - Ok - Roz 
-Servo XYZ1.stl - 40x - modra - 2x - +20 - Dot
+Servo XY5.stl - 40x - modra - 2x - Ok - Roz
+Servo XYZ1.stl - 40x - modra - 1x - Ok - Roz
 Servo YZ1.stl - 40x - modra - 2x - Ok - Roz
 Servo YZ2.stl - 40x - modra - 2x - Ok - Roz
 ServoArm1.stl - 80x - modra - 4x - Ok - Roz
