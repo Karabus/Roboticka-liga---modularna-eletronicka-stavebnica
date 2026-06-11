@@ -1,5 +1,5 @@
-#define TRIG 0
-#define ECHO 1
+#define TRIG 10
+#define ECHO 9
 
 float scanDistance(){
   digitalWrite(TRIG, LOW);

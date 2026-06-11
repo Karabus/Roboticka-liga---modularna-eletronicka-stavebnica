@@ -10,16 +10,18 @@ void setup() {
   Serial.begin(115200);
   servo.attach(SERVO_PIN,500,2500);
   servo.write(position);
+  delay(1000);
+  servo.write(2);  
 }
 
 void loop() {
-
+/*
    while (Serial.available()) {
     char c = Serial.read();
 
     if (c == '\n') { // Enter
       position = inputString.toInt();
-      if (position >= 0 && position <= 180) {
+      if (position >= 500 && position <= 2500) {
         servo.write(position); // nastavi servo na uhol
         Serial.print(" Servo je nastavny na uhli: ");
         Serial.println(servo.read());
@@ -32,5 +34,5 @@ void loop() {
     }
   }
 
-  delay(50);
+  delay(50);*/
 }

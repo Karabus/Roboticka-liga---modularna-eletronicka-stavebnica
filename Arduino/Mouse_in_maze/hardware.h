@@ -1,12 +1,15 @@
 #ifndef HARDWARE_H
 #define HARDWARE_H
+
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <VL53L0X.h>
-// === I2C ===
-#define I2C_SDA  4
-#define I2C_SCL  5
+#include <Servo.h>
+
+// === I2C piny ===
+#define I2C_SDA 4
+#define I2C_SCL 5
 #define BNO_SDA 6
 #define BNO_SCL 7
 
@@ -15,19 +18,30 @@
 #define SERVO_RIGHT_PIN 11
 
 // === XSHUT piny pre VL53L0X ===
-const int xshutPins[3] = {0, 1, 2}; // vľavo, vpredu, vpravo
+// extern — definície sú v hardware.cpp, inak ODR porušenie
+extern const int     xshutPins[3];
+extern const uint8_t sensorAddrs[3];
 
 struct SensorData {
-  int left, front, right;
-  float heading;
-  int dir;
+    int   left, front, right;
+    float heading;
+    int   dir;
 };
 
-int setupGyroscope();
-int setupLasers();
+extern VL53L0X         sensors[3];
+extern Adafruit_BNO055 bno;
+extern Servo           servoLeft;
+extern Servo           servoRight;
+extern bool            gyroActive;
 
-VL53L0X sensors[3];
-const uint8_t sensorAddrs[3] = {0x30, 0x31, 0x32};
+constexpr int   STOP    = 90;
+constexpr int   SPEED   = 20;
+constexpr float EPSILON = 2.0f;
 
-bool gyroActive = false;
+bool       setupGyroscope();
+bool       setupLasers();
+void       setupServos();
+void       setupI2C();
+SensorData readSensors();
+
 #endif
