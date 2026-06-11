@@ -19,6 +19,10 @@ void setupI2C() {
     delay(100);
 }
 
+void setupButton() {
+    pinMode(BUTTON_PIN, INPUT_PULLUP);  // stlačené = LOW
+}
+
 // ============================================================
 // SETUP GYROSKOP (Wire1 — druhá zbernica pre BNO055)
 // ============================================================

@@ -17,6 +17,8 @@
 #define SERVO_LEFT_PIN  10
 #define SERVO_RIGHT_PIN 11
 
+#define BUTTON_PIN 15
+
 // === XSHUT piny pre VL53L0X ===
 // extern — definície sú v hardware.cpp, inak ODR porušenie
 extern const int     xshutPins[3];
@@ -42,6 +44,7 @@ bool       setupGyroscope();
 bool       setupLasers();
 void       setupServos();
 void       setupI2C();
+void       setupButton();
 SensorData readSensors();
 
 #endif

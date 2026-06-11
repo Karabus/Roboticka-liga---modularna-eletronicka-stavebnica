@@ -56,6 +56,7 @@ struct Map {
         for (uint8_t x = 0; x < size_X; x++)
             for (uint8_t y = 0; y < size_Y; y++)
                 newMaze[x][y] = maze[x][y];
+            
         // Nastav súradnice pre nové bunky
         for (uint8_t i = 0; i < new_X; i++)
             for (uint8_t j = 0; j < new_Y; j++) {

@@ -1,6 +1,6 @@
 #include <array>
 #include <algorithm>
-#include "globals.h"   // ← musí byť pred motion.h a mouse.h
+#include "globals.h"
 #include "motion.h"
 #include "mouse.h"
 #include "maze_map.h"
@@ -18,11 +18,12 @@ static SensorData d = {0, 0, 0, 0.0f, 0};
 void setup() {
   setupI2C();
   setupServos();
+  setupButton();
   Serial.begin(115200);
   while (!Serial) delay(10);
 
   mapa.begin(2, 2);
-  root = &mapa.at(0, 0);   // ✅
+  root = &mapa.at(0, 0);
 
   if (!setupGyroscope()) { Serial.println("FATAL: Gyroskop!"); while (1) {} }
   if (!setupLasers())    { Serial.println("FATAL: Lasery!");   while (1) {} }
