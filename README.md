@@ -128,7 +128,7 @@ Po absolvovaní projektu by mali účastníci rozumieť základom:
 
 # Ako začať
 
-Všetko je v `Prvé kolo` na stránke [3D Ligi](3dliga.robotika.sk/wiki)
+Všetko je v `Prvé kolo` na stránke 3D Ligi (3dliga.robotika.sk/wiki)
 
 ---
 
